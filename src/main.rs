@@ -48,23 +48,26 @@ fn main() {
                               &mut pointer as *mut _ as *mut _,
                               4);
     pointer += 0x524;
-    let mut block = [0u32; 90 as usize];
-    loop {
-    
-        get_proc(pid).read_memory
-        (&pointer,
-         &mut block as *mut _ as *mut _,
-         360);
-        let mut results = Vec::new();
-        results.extend_from_slice(&block[0..20]);
-        results.extend_from_slice(&block[50..]);
-        let mut map = BTreeMap::new();
-        for i in 0..20 {
-            map.insert(MATERIALS[i], [results[i], results[i+20], results[i+40]]);
+    let mut block = [0u32; 110 as usize];
+    let mut material_map = BTreeMap::new();
+    for i in 0..MATERIALS.len() {
+        material_map.insert(MATERIALS[i], [0u32; 5 as usize]);
+    }
+    loop {        
+        get_proc(pid).read_memory (&pointer, &mut block as *mut _ as *mut _, 440);
+        let mut dirty_flag = false;
+        for i in 0..MATERIALS.len() {
+            let val = [block[i], block[i+50], block[i+70], block[i+25], block[i+90]];
+            if material_map.insert(MATERIALS[i], val).unwrap() != val {
+                dirty_flag = true;    
+            }
         }
-        let json = serde_json::to_string(&map).unwrap(); 
-        out.send(json.as_str()).unwrap();
-        thread::sleep(Duration::from_millis(600));
+        if dirty_flag {
+            material_map.insert("town", [block[24], block[50], 0u32, 0u32, 0u32]);
+            let json = serde_json::to_string(&material_map).unwrap(); 
+            out.send(json.as_str()).unwrap();
+        } 
+        thread::sleep(Duration::from_millis(1000));
     }
 }
 
