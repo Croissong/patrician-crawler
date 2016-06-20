@@ -12,6 +12,9 @@ serde = "*"
 serde_json = "*"
 env_logger = "*"
 log = "*"
+rand = "*"
+serde_macros = "*"
+clippy = "*"
 
 [dependencies.ws]
 version = "*"
