@@ -1,7 +1,7 @@
 use std::{ptr, mem};
 use std::os::raw::c_void;
 use std::ffi::OsString;
-use super::{winapi, kernel32};
+use super::super::{winapi, kernel32};
 
 use wio::wide::FromWide;
 
@@ -20,7 +20,7 @@ pub struct Process {
 
 impl Process {
     fn new(m_handler: winapi::HANDLE) -> Process {
-        return Process { handler: m_handler }
+        Process { handler: m_handler }
     }
 
     pub fn read_memory(&self, addr: &u64, out_ptr: *mut c_void, size: u64) -> bool {
@@ -35,7 +35,7 @@ impl Process {
     }
 }
 fn get_proc(pid: u32) -> Process {
-    return Process::new(unsafe{kernel32::OpenProcess(winapi::PROCESS_VM_READ, 0, pid)});
+    Process::new(unsafe{kernel32::OpenProcess(winapi::PROCESS_VM_READ, 0, pid)})
 }
 
 fn get_proc_id_by_name(name: &str) -> u32 {
@@ -66,5 +66,5 @@ fn get_proc_id_by_name(name: &str) -> u32 {
             }            
         }
     }   
-    return 0;
+    0
 }

@@ -2,7 +2,7 @@ use ws::{connect, Handler, Sender, Handshake, Result, Message};
 use std::sync::mpsc::channel;
 use std::thread;
 use std::sync::mpsc;
-use structs::{Infos};
+use super::structs::{Infos};
 use time;
 use serde_json;
 

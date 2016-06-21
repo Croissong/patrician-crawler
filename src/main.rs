@@ -1,5 +1,6 @@
 #![feature(custom_derive, plugin)]
 #![plugin(serde_macros, clippy)]
+#[allow(needless_lifetimes)]
 #[macro_use] extern crate log;
 
 extern crate rand;
@@ -16,9 +17,9 @@ mod crawler;
 
 use std::time::Duration;
 use std::thread;
-use websocket::{spawn_websocket, send_infos};
-use crawler::{Crawler, crawl};
-use process::{Process};
+use crawler::websocket::{spawn_websocket, send_infos};
+use crawler::crawler::{Crawler};
+use crawler::process::{Process, get_proc_by_name};
 
 fn main() {
     env_logger::init().unwrap();
@@ -31,7 +32,7 @@ fn main() {
 fn start_crawler(process: Process) {
     println!("Found Patrician process");
     let socket = spawn_websocket(); 
-    let crawler = Crawler::new(socket, addresses, process); 
+    let mut crawler = Crawler::new(process); 
     loop {
         match crawler.crawl() {
             Ok(infos) => send_infos(&infos, &socket),
