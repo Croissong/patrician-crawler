@@ -1,5 +1,5 @@
 language: rust
 rust:
-  - nightly
+  - 1.11.0-nightly
 
 script: cargo build --release --verbose
