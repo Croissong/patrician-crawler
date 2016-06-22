@@ -116,9 +116,9 @@ impl Player {
     } 
 }
 
-fn diff_mats<'a, T: PartialEq + Clone>(mats: &BTreeMap<&'static str, T>,
-                                       new_mats: &BTreeMap<&'static str, T>)
-                                       -> BTreeMap<&'static str, T> {
+fn diff_mats<T: PartialEq + Clone>(mats: &BTreeMap<&'static str, T>,
+                                   new_mats: &BTreeMap<&'static str, T>)
+                                   -> BTreeMap<&'static str, T> {
     let mut diff: BTreeMap<&str, T> = new_mats.clone(); 
     for (key, val ) in new_mats.iter() {
         if &mats.get(key).unwrap() == &val {
