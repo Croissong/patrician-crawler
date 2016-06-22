@@ -9,7 +9,10 @@ pub fn get_proc_by_name(name: &str) -> Result<Process, &str> {
     let pid = get_proc_id_by_name(name);
     match pid {
         0 => Err("No Patrician process found."),
-        pid => Ok(get_proc(pid))
+        pid => {
+            println!("Found Patrician process with id {}", pid);
+            Ok(get_proc(pid))
+        }
     } 
 }
 
@@ -29,7 +32,10 @@ impl Process {
                                                 *addr as *const _,
                                                 out_ptr,
                                                 size,
-                                                ptr::null_mut()); 
+                                                ptr::null_mut());
+            if r == 0 {
+                println!("{}", kernel32::GetLastError());
+            }
             r == 1
         }
     }

@@ -25,7 +25,7 @@ impl Crawler {
             Ok(town_name) => self.get_differences(town_name),
             Err(_) => {
                 self.addresses = get_addresses(&self.process);
-                Err("No changes...")
+                Err("No changes...1")
             } 
         }
     }
@@ -62,43 +62,44 @@ impl Crawler {
     }
 
     fn get_player_info(&mut self) -> Player {
-    let mut player = Player::new();
-    if self.infos.player.is_empty() {
-        let player_name = self.get_player_name();
-        match from_utf8(player_name) {
-            Ok(name) => { println!("Player {} found.", name);
-                          player.name = name.clone(); },
-            Err(_) => { println!("Please select the Kontor for name identification.");
-                        self.addresses.update_player_addr(&self.process); }
+        let mut player = Player::new();
+        if self.infos.player.is_empty() {
+            let player_name = self.get_player_name();
+            match from_utf8(player_name) {
+                Ok(name) => { println!("Player {} found.", name);
+                              player.name = name.clone(); },
+                Err(_) => { println!("Please select the Kontor for name identification.");
+                            self.addresses.update_player_addr(&self.process); }
+            }
         }
+        player 
     }
-    player 
-}
     
-fn get_player_name(&self) -> &'static [u8; 8] {
-    const PLAYER_NAME: &'static [u8; 8] = &[0u8; 8];
-    self.process.read_memory(&self.addresses.player_name,
-                             &mut PLAYER_NAME as *mut _ as *mut _,
-                             8);
-    PLAYER_NAME
+    fn get_player_name(&self) -> &'static [u8; 8] {
+        const PLAYER_NAME: &'static [u8; 8] = &[0u8; 8];
+        self.process.read_memory(&self.addresses.player_name,
+                                 &mut PLAYER_NAME as *mut _ as *mut _,
+                                 8);
+        PLAYER_NAME
+    }
+
+    fn get_kontor_block(&self) -> [u32; 110 as usize]{
+        let mut block = [0u32; 110 as usize];
+        self.process.read_memory (&self.addresses.kontor, &mut block as *mut _ as *mut _, 440);
+        block
+    }
+
+    fn get_town_ref(&self) -> &'static [u8; 7] {
+        const TOWN_NAME: &'static [u8; 7] = &[0u8; 7];
+        self.process.read_memory(&self.addresses.town_name,
+                                 &mut TOWN_NAME as *mut _ as *mut _,
+                                 7);
+        TOWN_NAME
+    }
 }
 
-fn get_kontor_block(&self) -> [u32; 110 as usize]{
-    let mut block = [0u32; 110 as usize];
-    self.process.read_memory (&self.addresses.kontor, &mut block as *mut _ as *mut _, 440);
-    block
-}
-
-fn get_town_ref(&self) -> &'static [u8; 7] {
-    const TOWN_NAME: &'static [u8; 7] = &[0u8; 7];
-    self.process.read_memory(&self.addresses.town_name,
-                             &mut TOWN_NAME as *mut _ as *mut _,
-                             7);
-    TOWN_NAME
-}
-}
-
-    fn is_valid_town<'a>(town_name: &'a [u8; 7]) -> Result<&'a str, &'a str>{
+fn is_valid_town<'a>(town_name: &'a [u8; 7]) -> Result<&'a str, &'a str>{
+    println!("{:?}", town_name);
     match from_utf8(town_name) {
         Ok(val) => is_known_town(val),
         Err(_) => Err("invalid town")

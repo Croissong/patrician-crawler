@@ -30,7 +30,6 @@ fn main() {
 }
 
 fn start_crawler(process: Process) {
-    println!("Found Patrician process");
     let socket = spawn_websocket(); 
     let mut crawler = Crawler::new(process); 
     loop {

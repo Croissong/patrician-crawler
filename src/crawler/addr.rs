@@ -8,6 +8,7 @@ pub fn get_addresses(process: &Process) -> Addresses {
     let kontor = read_ptr_addr(process, &KONTOR_PTR);
     let town_name = read_ptr_addr(process, &Pointer{ addr: read_ptr_addr(process, &TOWNNAME_PTR),
                                                      offset: 0x0 });
+    println!("{:x}", town_name);
     let player_name = read_ptr_addr(process, &PLAYER_NAME_PTR);
     Addresses { kontor: kontor, town_name: town_name, player_name: player_name }    
 }

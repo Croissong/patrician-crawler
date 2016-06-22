@@ -1,2 +1,6 @@
 * Memory crawler for Patrician 3 (Windows)
 [[https://travis-ci.org/Croissong/patrician-crawler][https://travis-ci.org/Croissong/patrician-crawler.svg]]
+** Usage
+Start as admin
+** Todo
+- [ ] Imrove websocket Connection
