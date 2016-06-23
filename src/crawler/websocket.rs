@@ -25,8 +25,7 @@ fn join_channel(out: &Sender){
 }
 
 pub fn send_infos(infos: &Infos, socket: &Sender) {
-    let json = serde_json::to_string(&infos).unwrap();
-    println!("{:?}", json);
+    let json = serde_json::to_string(&infos).unwrap(); 
     let string = format!("{{\"topic\":\"rust_client:web_client\",\"ref\":null,\"payload\":{{\"body\":{}}},\"event\":\"rust_client:web_client\"}}", json);
     println!("sent update at {}", time::now().ctime());
     socket.send(string).unwrap();

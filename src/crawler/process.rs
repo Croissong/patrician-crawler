@@ -34,12 +34,22 @@ impl Process {
                                                 size,
                                                 ptr::null_mut());
             if r == 0 {
-                println!("{}", kernel32::GetLastError());
+                read_memory_err();
             }
             r == 1
         }
     }
 }
+
+unsafe fn read_memory_err() {
+    let err = kernel32::GetLastError();
+    if err == 6 {
+        println!("Start with administrator privileges.");
+    } else {
+        println!("{}", err);
+    }
+}
+
 fn get_proc(pid: u32) -> Process {
     Process::new(unsafe{kernel32::OpenProcess(winapi::PROCESS_VM_READ, 0, pid)})
 }

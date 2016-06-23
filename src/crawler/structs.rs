@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::fmt::Debug;
 
 #[derive(Debug, Serialize)]
 pub struct Infos {
@@ -33,14 +34,14 @@ pub struct TownMaterial {
 
 #[derive(Debug, Serialize)]
 pub struct Town  {
-    pub name: &'static str,
+    pub name: String,
     pub materials: BTreeMap<&'static str, TownMaterial>,
     pub total_weight: u32,
     pub unknown: u32
 }
 impl Town {
     pub fn new() -> Town {
-        Town{ name: "", materials: BTreeMap::new(), total_weight: 0, unknown: 0 }
+        Town{ name: "".to_string(), materials: BTreeMap::new(), total_weight: 0, unknown: 0 }
     }
 
     pub fn diff(&self, town: &Town) -> Town {
@@ -95,12 +96,11 @@ pub struct ShipMaterial {
 #[derive(Debug, Serialize)]
 pub struct Player {
     pub gold: u32,
-    pub name: &'static str
+    pub name: String
 }
 impl Player {
-
     pub fn new() -> Player {
-        Player{name: "", gold: 0}
+        Player{name: "".to_string(), gold: 0}
     }
     
     pub fn is_empty(&self) -> bool {
@@ -116,12 +116,13 @@ impl Player {
     } 
 }
 
-fn diff_mats<T: PartialEq + Clone>(mats: &BTreeMap<&'static str, T>,
-                                   new_mats: &BTreeMap<&'static str, T>)
-                                   -> BTreeMap<&'static str, T> {
+fn diff_mats<T: PartialEq + Clone + Debug>(mats: &BTreeMap<&'static str, T>,
+                                           new_mats: &BTreeMap<&'static str, T>)
+                                           -> BTreeMap<&'static str, T> {
     let mut diff: BTreeMap<&str, T> = new_mats.clone(); 
     for (key, val ) in new_mats.iter() {
-        if &mats.get(key).unwrap() == &val {
+        let old_mat = &mats.get(key);
+        if old_mat.is_some() && &old_mat.unwrap() == &val {
             diff.remove(key);
         }
     }
