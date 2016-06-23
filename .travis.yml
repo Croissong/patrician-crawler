@@ -2,4 +2,4 @@ language: rust
 rust:
   - nightly-2016-06-09
 
-script: cargo build --release --verbose
+script: cargo build --verbose
