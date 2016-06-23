@@ -29,7 +29,7 @@ fn main() {
     if is_dev_mode() {
         mock();
     } else {
-        match get_proc_by_name("Patrician3.exe") {
+        match unsafe{get_proc_by_name("Patrician3.exe")} {
             Err(err) => println!("{}", err),
             Ok(process) => start_crawler(process)
         }

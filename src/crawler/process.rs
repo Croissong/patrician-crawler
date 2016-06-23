@@ -5,7 +5,7 @@ use super::super::{winapi, kernel32};
 
 use wio::wide::FromWide;
 
-pub fn get_proc_by_name(name: &str) -> Result<Process, &str> {
+pub unsafe fn get_proc_by_name(name: &str) -> Result<Process, &str> {
     let pid = get_proc_id_by_name(name);
     match pid {
         0 => Err("No Patrician process found."),
@@ -27,7 +27,7 @@ impl Process {
     }
 
     pub fn read_memory(&self, addr: &u64, out_ptr: *mut c_void, size: u64) -> bool {
-        unsafe {
+        unsafe{
             let r = kernel32::ReadProcessMemory(self.handler,
                                                 *addr as *const _,
                                                 out_ptr,
@@ -36,7 +36,7 @@ impl Process {
             if r == 0 {
                 read_memory_err();
             }
-            r == 1
+            r == 1 
         }
     }
 }
@@ -50,26 +50,20 @@ unsafe fn read_memory_err() {
     }
 }
 
-fn get_proc(pid: u32) -> Process {
-    Process::new(unsafe{kernel32::OpenProcess(winapi::PROCESS_VM_READ, 0, pid)})
+unsafe fn get_proc(pid: u32) -> Process {
+    Process::new(kernel32::OpenProcess(winapi::PROCESS_VM_READ, 0, pid))
 }
 
-fn get_proc_id_by_name(name: &str) -> u32 {
-    
-    let mut process: winapi::PROCESSENTRY32W = unsafe{mem::uninitialized()}; 
+unsafe fn get_proc_id_by_name(name: &str) -> u32 {
+    let mut process: winapi::PROCESSENTRY32W = mem::uninitialized();
     process.dwSize = mem::size_of::<winapi::PROCESSENTRY32W>() as u32; 
-
     //Make a Snanshot of all the current proccess.
-    let snapshot = unsafe{kernel32::CreateToolhelp32Snapshot(winapi::TH32CS_SNAPPROCESS, 0)};
-    
+    let snapshot = kernel32::CreateToolhelp32Snapshot(winapi::TH32CS_SNAPPROCESS, 0); 
     //Get the first proccess and store it in proccess variable.
-    if unsafe{kernel32::Process32FirstW(snapshot, &mut process)} != 0{
-        
+    if kernel32::Process32FirstW(snapshot, &mut process) != 0{
         //Take the next procces if posible.
-        while unsafe{kernel32::Process32NextW(snapshot, &mut process)} != 0 {    
-            
-            let process_name = OsString::from_wide(&process.szExeFile);
-            
+        while kernel32::Process32NextW(snapshot, &mut process) != 0 {
+            let process_name = OsString::from_wide(&process.szExeFile); 
             match process_name.into_string() {
                 Ok(s) => {
                     if s.contains(name) {
