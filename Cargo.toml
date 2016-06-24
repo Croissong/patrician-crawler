@@ -13,7 +13,7 @@ serde_json = "*"
 env_logger = "*"
 log = "*"
 rand = "*"
-serde_macros = "*"
+serde_macros = "0.7.11"
 clippy = "*"
 
 [dependencies.ws]

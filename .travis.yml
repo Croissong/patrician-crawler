@@ -1,5 +1,5 @@
 language: rust
 rust:
-  - nightly-2016-06-09
+  - nightly-2016-06-23
 
 script: cargo build --verbose
