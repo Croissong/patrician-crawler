@@ -2,5 +2,3 @@
 [[https://travis-ci.org/Croissong/patrician-crawler][https://travis-ci.org/Croissong/patrician-crawler.svg]][[https://clippy.bashy.io/github/Croissong/patrician-crawler/master/log][https://clippy.bashy.io/github/Croissong/patrician-crawler/master/badge.svg]]
 ** Usage
 Start as admin
-** Todo
-- [ ] Improve websocket Connection

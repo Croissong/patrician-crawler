@@ -6,16 +6,17 @@ use rand;
 use ws::{Sender};
 
 use super::structs::{TownMaterial, Infos};
-use super::constants::{MATERIALS};
+use super::constants::{MATERIALS, SERVER_URL};
 use super::websocket::{spawn_websocket, send_infos};
 
 pub fn mock() {
-    let socket = spawn_websocket(); 
-    let mut infos = Infos::new();
-    loop {
-        send_random_infos("Luebeck".to_string(), &mut infos, &socket);
-        send_random_infos("Rostock".to_string(), &mut infos, &socket); 
-        thread::sleep(Duration::from_millis(1000));
+    if let Some(socket) = spawn_websocket(SERVER_URL.to_string()) {
+        let mut infos = Infos::new();
+        loop {
+            send_random_infos("Luebeck".to_string(), &mut infos, &socket);
+            send_random_infos("Rostock".to_string(), &mut infos, &socket); 
+            thread::sleep(Duration::from_millis(1000));
+        }
     }
 }
 

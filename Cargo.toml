@@ -15,6 +15,7 @@ log = "*"
 rand = "*"
 serde_macros = "0.7.11"
 clippy = "*"
+getopts = "0.2.4"
 
 [dependencies.ws]
 version = "*"
