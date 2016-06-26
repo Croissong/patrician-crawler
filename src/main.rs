@@ -1,6 +1,6 @@
 #![feature(custom_derive, plugin)]
 #![plugin(serde_macros, clippy)]
-#![allow(needless_lifetimes, identity_op, clone_on_copy, clone_double_ref)]
+#![allow(identity_op)]
 #[macro_use] extern crate log;
 
 extern crate rand;

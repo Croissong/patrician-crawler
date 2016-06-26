@@ -45,20 +45,20 @@ impl Town {
     }
 
     pub fn diff(&self, town: &Town) -> Town {
-        let mut diff: Town = Town::new();
+        let mut diff = Town::new();
         if &self.name != &town.name {
             diff.name = town.name.clone();
             // if new town don't diff mats
             diff.materials = town.materials.clone();
-            diff.total_weight = town.total_weight.clone();
-            diff.unknown = town.unknown.clone();
+            diff.total_weight = town.total_weight;
+            diff.unknown = town.unknown;
         }
         diff.materials = diff_mats(&self.materials, &town.materials);
         if &self.total_weight != &town.total_weight {
-            diff.total_weight = town.total_weight.clone();
+            diff.total_weight = town.total_weight;
         }
         if &self.unknown != &town.unknown {
-            diff.unknown = town.unknown.clone();
+            diff.unknown = town.unknown;
         }
         diff
     }
@@ -71,15 +71,23 @@ impl Town {
 
 #[derive(Debug, Serialize)]
 pub struct Ship {
-    pub materials: BTreeMap<&'static str, ShipMaterial>
+    pub materials: BTreeMap<&'static str, ShipMaterial>,
+    pub name: String
 }
 impl Ship {
     pub fn new() -> Ship {
-        Ship{ materials: BTreeMap::new() }
+        Ship{ materials: BTreeMap::new() , name: "".to_string() }
     }
     
     pub fn diff(&self, ship: &Ship) -> Ship {
-        Ship{ materials: diff_mats(&self.materials, &ship.materials) }
+        let mut diff= Ship::new();
+        if &self.name != &ship.name {
+            diff.name = ship.name.clone(); 
+            diff.materials = ship.materials.clone(); 
+        } else {
+            diff.materials = diff_mats(&self.materials, &ship.materials);
+        }
+        diff
     }
 
     pub fn is_empty(&self) -> bool {

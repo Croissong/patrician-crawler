@@ -10,16 +10,15 @@ use serde_json;
 
 pub fn spawn_websocket(server_url: String) -> Option<Sender> {
     let (tx, rx) = channel(); 
-    thread::spawn(move|| {
+    thread::Builder::new().name("websocket".to_string()).spawn(move|| {
         if let Err(error) = connect(server_url.clone().as_str(), |out| {
             out.timeout(2000, out.token()).unwrap();
-            Client { out: out, tx: tx.clone() , host: server_url.clone()}
+            Client { out: out, tx: tx.clone() , host: server_url.clone(), timeout: None}
         }) {
             // Inform the user of failure
             println!("Failed to create WebSocket due to: {:?}", error);
         }
-
-    });
+    }).unwrap();
     match rx.recv().unwrap() {
         Some(socket) => {
             join_channel(&socket);
@@ -44,7 +43,8 @@ pub fn send_infos(infos: &Infos, socket: &Sender) {
 struct Client {
     pub host: String,
     pub out: Sender,
-    pub tx: mpsc::Sender<Option<Sender>>
+    pub tx: mpsc::Sender<Option<Sender>>,
+    pub timeout: Option<util::Timeout>,
 }
 
 impl Handler for Client {
@@ -55,6 +55,9 @@ impl Handler for Client {
     }
     
     fn on_message(&mut self, _: Message) -> Res<()> {
+        if let Some(t) = self.timeout.take() {
+            try!(self.out.cancel(t))
+        }
         Ok(())
     }
 
@@ -70,9 +73,14 @@ impl Handler for Client {
         println!("The server encountered an error: {:?}", err);
     }
 
-    fn on_timeout(&mut self, _: util::Token) -> Res<()> {
+    fn on_timeout(&mut self, token: util::Token) -> Res<()> {
+        println!("{:?}", token);
         println!("Unable to connect to websocket server {}", self.host);
         self.tx.send(None).unwrap(); 
+        Ok(())
+    }
+    fn on_new_timeout(&mut self, _: util::Token, timeout: util::Timeout) -> Res<()> {
+        self.timeout = Some(timeout);
         Ok(())
     }
 }

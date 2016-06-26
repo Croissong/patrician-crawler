@@ -53,52 +53,52 @@ impl Crawler {
         let mut town_materials = BTreeMap::new();
         let mut ship_materials = BTreeMap::new();
         for (i, key) in MATERIALS.iter().enumerate() {
-            town_materials.insert(key.clone(), create_town_material(i, kontor_block));
-            ship_materials.insert(key.clone(), create_ship_material(i, kontor_block)); 
+            town_materials.insert(key.to_owned(), create_town_material(i, kontor_block));
+            ship_materials.insert(key.to_owned(), create_ship_material(i, kontor_block)); 
         }
         (town_materials, ship_materials)
     }
 
     fn get_player_info(&mut self) -> Player {
-        let mut player = Player::new();
-        if self.infos.player.is_empty() {
-            let name = self.get_player_name();
-            if is_valid_player_name(&name) {
-                println!("Player {} found.", name);
-                player.name = name;
-            } else {
-                println!("Please select the Kontor for name identification.");
-                self.addresses.update_player_addr(&self.process); 
-            }
-        } 
-        player 
-    }
+    let mut player = Player::new();
+    if self.infos.player.is_empty() {
+        let name = self.get_player_name();
+        if is_valid_player_name(&name) {
+            println!("Player {} found.", name);
+            player.name = name;
+        } else {
+            println!("Please select the Kontor for name identification.");
+            self.addresses.update_player_addr(&self.process); 
+        }
+    } 
+    player 
+}
     
-    fn get_player_name(&self) -> String {
-        let mut player_name_arr = [0u8; 8];
-        self.process.read_memory(&self.addresses.player_name,
-                                 &mut player_name_arr as *mut _ as *mut _,
-                                 8);
-        player_name_arr.iter()
-            .map(|b| { format!("{}", b.clone() as char) })
-            .collect::<String>()
-    }
+fn get_player_name(&self) -> String {
+    let mut player_name_arr = [0u8; 8];
+    self.process.read_memory(&self.addresses.player_name,
+                             &mut player_name_arr as *mut _ as *mut _,
+                             8);
+    player_name_arr.iter()
+        .map(|b| { format!("{}", b.clone() as char) })
+        .collect::<String>()
+}
 
-    fn get_kontor_block(&self) -> [u32; 110 as usize]{
-        let mut block = [0u32; 110 as usize];
-        self.process.read_memory (&self.addresses.kontor, &mut block as *mut _ as *mut _, 440);
-        block
-    }
+fn get_kontor_block(&self) -> [u32; 110 as usize]{
+    let mut block = [0u32; 110 as usize];
+    self.process.read_memory (&self.addresses.kontor, &mut block as *mut _ as *mut _, 440);
+    block
+}
 
-    fn get_town_name(&self) -> String {
-        let mut town_name_arr = [0u8; 7];
-        self.process.read_memory(&self.addresses.town_name,
-                                 &mut town_name_arr as *mut _ as *mut _,
-                                 7); 
-        town_name_arr.iter()
-            .map(|b| { format!("{}", b.clone() as char) })
-            .collect::<String>()
-    }
+fn get_town_name(&self) -> String {
+    let mut town_name_arr = [0u8; 7];
+    self.process.read_memory(&self.addresses.town_name,
+                             &mut town_name_arr as *mut _ as *mut _,
+                             7); 
+    town_name_arr.iter()
+        .map(|b| { format!("{}", b.clone() as char) })
+        .collect::<String>()
+}
 }
 fn is_known_town(town: &str) -> bool {
     TOWN_NAMES.contains(&town)
@@ -128,5 +128,5 @@ fn get_town_info(name: String, kontor_block: &[u32; 110 as usize],
 }
 
 fn get_ship_info(materials: BTreeMap<&'static str, ShipMaterial>) -> Ship {
-    Ship{ materials: materials } 
+    Ship{ materials: materials, name: "".to_string()} 
 }
