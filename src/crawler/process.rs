@@ -1,6 +1,7 @@
 use std::{ptr, mem};
 use std::os::raw::c_void;
 use std::ffi::OsString;
+use std::convert::TryFrom;
 use super::super::{winapi, kernel32};
 
 use wio::wide::FromWide;
@@ -16,7 +17,13 @@ pub unsafe fn get_proc_by_name(name: &str) -> Result<Process, &str> {
     } 
 }
 
-    
+
+pub struct Pointer {
+    pub addr: u64,
+    pub offsets: Vec<i64>
+}
+
+#[derive(Clone, Copy)]
 pub struct Process {
     pub handler: winapi::HANDLE
 }
@@ -25,6 +32,16 @@ impl Process {
     fn new(m_handler: winapi::HANDLE) -> Process {
         Process { handler: m_handler }
     }
+
+    pub fn read_ptr(&self, ptr: &Pointer) -> u64 {
+        let mut ptr_addr: u64 = 0;
+        for offset in &ptr.offsets {
+            self.read_memory(&ptr.addr, &mut ptr_addr as *mut _ as *mut _, 4);
+            ptr_addr += u64::try_from(offset.to_owned()).unwrap();
+        }
+        ptr_addr 
+    }
+
 
     pub fn read_memory(&self, addr: &u64, out_ptr: *mut c_void, size: u64) -> bool {
         unsafe{

@@ -3,7 +3,7 @@ use ws::{connect, Handler, Sender, Handshake, Result as Res,
 use std::sync::mpsc::channel;
 use std::thread;
 use std::sync::mpsc;
-use super::structs::{Infos};
+use super::crawler::{Infos};
 use super::constants;
 use time;
 use serde_json;
@@ -36,7 +36,7 @@ fn join_channel(out: &Sender){
 pub fn send_infos(infos: &Infos, socket: &Sender) {
     let json = serde_json::to_string(&infos).unwrap(); 
     let string = format!("{{\"topic\":\"rust_client:web_client\",\"ref\":null,\"payload\":{{\"body\":{}}},\"event\":\"rust_client:web_client\"}}", json);
-    println!("sent update at {}", time::now().ctime());
+    println!("sent update for {} at {}", &infos.town.name, time::now().ctime());
     socket.send(string).unwrap();
 }
 

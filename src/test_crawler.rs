@@ -6,8 +6,9 @@ mod tests {
     
     #[test]
     fn get_town_ref() {
-        let process = get_proc_by_name("Patrician3.exe").unwrap();
-        let town_addr = get_addresses(&process).town_name;
+        let process = get_proc_by_name("Patrician3.exe");
+        assert!(process.is_ok());
+        let town_addr = get_addresses(&process.unwrap()).town_name;
         let mut town_name_arr: [u8; 7] = [0u8; 7];
         process.read_memory(&town_addr,
                             &mut town_name_arr as *mut _ as *mut _,
@@ -27,5 +28,8 @@ mod tests {
         assert!(infos.is_ok());
         assert!(!infos.unwrap().is_empty()); 
     }
+
+    fn getCrawler() -> Crawler{
         
+    }
 }

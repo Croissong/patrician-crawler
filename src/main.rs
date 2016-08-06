@@ -1,4 +1,4 @@
-#![feature(custom_derive, plugin)]
+#![feature(custom_derive, plugin, try_from)]
 #![plugin(serde_macros, clippy)]
 #![allow(identity_op)]
 #[macro_use] extern crate log;
@@ -19,12 +19,7 @@ mod test_crawler;
 
 use std::time::Duration;
 use std::thread;
-use crawler::websocket::{spawn_websocket, send_infos};
-use crawler::crawler::{Crawler};
-use crawler::process::{Process, get_proc_by_name};
-use crawler::utils::{Output};
-use crawler::mock::{mock};
-use crawler::constants::{SERVER_URL};
+use crawler::{ websocket, process, mock, constants };
 use getopts::{Options, Matches};
 
 fn main() {
@@ -32,9 +27,9 @@ fn main() {
     let args = get_cli_args(); 
     if is_dev_mode(&args) {
         println!("Starting crawler in dev mode");
-        mock();
+        mock::mock();
     } else {
-        match unsafe{get_proc_by_name("Patrician3.exe")} {
+        match unsafe{process::get_proc_by_name("Patrician3.exe")} {
             Ok(process) => {
                 let host = get_server_host(&args);
                 start_crawler(process, host)
@@ -44,14 +39,12 @@ fn main() {
     }
 }
 
-fn start_crawler(process: Process, host: String) {
-    if let Some(socket) = spawn_websocket(host) {   
-        let mut output = Output::new();
-        let mut crawler = Crawler::new(process); 
+fn start_crawler(process: process::Process, host: String) {
+    if let Some(socket) = websocket:: spawn_websocket(host) {
+        let ( mut crawler, inital_infos ) = crawler::crawler::Crawler::new(process); 
         loop {
-            match crawler.crawl() {
-                Ok(infos) => send_infos(&infos, &socket),
-                Err(err) => output.print_if_new(err.to_string())
+            if let Some(infos) = crawler.crawl(&inital_infos) {
+                websocket::send_infos(&infos, &socket);
             }
             thread::sleep(Duration::from_millis(1000));
         }
@@ -73,7 +66,7 @@ fn get_server_host(args: &Matches) -> String {
     if let Some(host) = args.opt_str("s") {
         format!("ws://{}/socket/websocket?vsn=1.0.0", host)
     } else {
-        SERVER_URL.to_string()
+        constants::SERVER_URL.to_string()
     }
 }
 
