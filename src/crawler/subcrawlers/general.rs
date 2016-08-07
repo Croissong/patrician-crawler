@@ -16,7 +16,7 @@ impl GeneralCrawler {
     }
     
     pub fn get_town_name(&self) -> Option<String> {
-    let mut town_name_arr = [0u8; 11];
+        let mut town_name_arr = [0u8; 11];
         self.process.read_memory(&self.town_name_addr,
                                  &mut town_name_arr as *mut _ as *mut _,
                                  11); 
@@ -24,27 +24,21 @@ impl GeneralCrawler {
             .map(|b| { format!("{}", b.clone() as char) })
             .collect::<String>(); 
         name = name.split(' ').next().unwrap().to_string();
-        if is_known_town(name.as_str()) {
+        if TOWN_NAMES.contains(&name.as_str()) {
             Some(name)
         } else {
+            println!("unkown town: {} at addr: {:x}", name, &self.town_name_addr);
             None
         }
     }
 
     pub fn get_date(&self) -> [u32; 3] {
-    let mut date_arr = [0u32; 3];
-    self.process.read_memory(&self.date_addr,
-                             &mut date_arr as *mut _ as *mut _,
-                             12);
-    println!("{}, {}, {}", date_arr[0], date_arr[1], date_arr[2]);
-    date_arr
-}
+        let mut date_arr = [0u32; 3];
+        self.process.read_memory(&self.date_addr,
+                                 &mut date_arr as *mut _ as *mut _,
+                                 12);
+        println!("{}, {}, {}", date_arr[0], date_arr[1], date_arr[2]);
+        date_arr
+    }
 }
 
-fn is_known_town(town: &str) -> bool {
-    let bool = TOWN_NAMES.contains(&town);
-    if !bool {
-        println!("{}", &town);
-    }
-    bool
-}

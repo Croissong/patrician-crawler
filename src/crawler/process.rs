@@ -17,7 +17,7 @@ pub unsafe fn get_proc_by_name(name: &str) -> Result<Process, &str> {
     } 
 }
 
-
+#[derive(Debug)]
 pub struct Pointer {
     pub addr: u64,
     pub offsets: Vec<i64>
@@ -34,12 +34,14 @@ impl Process {
     }
 
     pub fn read_ptr(&self, ptr: &Pointer) -> u64 {
-        let mut ptr_addr: u64 = 0;
+        let mut result: u64 = 0;
+        let mut reading_addr: u64 = ptr.addr;
         for offset in &ptr.offsets {
-            self.read_memory(&ptr.addr, &mut ptr_addr as *mut _ as *mut _, 4);
-            ptr_addr += u64::try_from(offset.to_owned()).unwrap();
+            self.read_memory(&reading_addr, &mut result as *mut _ as *mut _, 4);
+            result += u64::try_from(offset.to_owned()).unwrap();
+            reading_addr = result;
         }
-        ptr_addr 
+        result
     }
 
 
