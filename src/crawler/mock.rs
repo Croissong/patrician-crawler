@@ -28,7 +28,7 @@ fn send_random_infos (town_name: String, ship_name: String, socket: &Sender) {
     }
     let infos = Infos {
         date: [1, 2, 1345],
-        player: player::Player{ name: "Patrician God".to_string(), gold: rnd_u32() },
+        player: player::Player{ name: Some("Patrician God".to_string()), gold: rnd_u32() },
         ship: ship::Ship{ materials: ship_mats, name: ship_name },
         town: town::Town{ name: town_name, materials: town_mats,
                           total_weight: rnd_u32(), unknown: rnd_u32() }

@@ -1,4 +1,4 @@
-#![feature(custom_derive, plugin, try_from)]
+#![feature(custom_derive, plugin, try_from, test)]
 #![plugin(serde_macros, clippy)]
 #![allow(identity_op)]
 #[macro_use] extern crate log;
@@ -13,6 +13,7 @@ extern crate serde_json;
 extern crate ws;
 extern crate env_logger;
 extern crate getopts;
+extern crate test;
 
 mod crawler;
 mod test_crawler;

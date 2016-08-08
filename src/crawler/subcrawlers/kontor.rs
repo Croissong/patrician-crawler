@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 
 pub struct KontorCrawler {
     process: Process,
-    kontor_addr: u64
+    kontor_addr: u32
 }
 
 impl KontorCrawler {
@@ -25,9 +25,7 @@ impl KontorCrawler {
     }
 
     fn get_kontor_block(&self) -> [u32; 110 as usize]{
-        let mut block = [0u32; 110 as usize];
-        self.process.read_memory (&self.kontor_addr, &mut block as *mut _ as *mut _, 440);
-        block
+        self.process.read_memory (&self.kontor_addr, [0u32; 110 as usize]) 
     }
 
     fn get_materials(&self, kontor_block: &[u32; 110 as usize])

@@ -1,5 +1,4 @@
 use std::{ptr, mem};
-use std::os::raw::c_void;
 use std::ffi::OsString;
 use std::convert::TryFrom;
 use super::super::{winapi, kernel32};
@@ -19,8 +18,8 @@ pub unsafe fn get_proc_by_name(name: &str) -> Result<Process, &str> {
 
 #[derive(Debug)]
 pub struct Pointer {
-    pub addr: u64,
-    pub offsets: Vec<i64>
+    pub addr: u32,
+    pub offsets: Vec<i32>
 }
 
 #[derive(Clone, Copy)]
@@ -33,29 +32,31 @@ impl Process {
         Process { handler: m_handler }
     }
 
-    pub fn read_ptr(&self, ptr: &Pointer) -> u64 {
-        let mut result: u64 = 0;
-        let mut reading_addr: u64 = ptr.addr;
+    pub fn read_ptr(&self, ptr: &Pointer) -> u32 {
+        let mut result: u32 = 0;
+        let mut reading_addr: u32 = ptr.addr;
         for offset in &ptr.offsets {
-            self.read_memory(&reading_addr, &mut result as *mut _ as *mut _, 4);
-            result += u64::try_from(offset.to_owned()).unwrap();
+            result = self.read_memory(&reading_addr, result);
+            result += u32::try_from(offset.to_owned()).unwrap();
             reading_addr = result;
         }
         result
     }
-
-
-    pub fn read_memory(&self, addr: &u64, out_ptr: *mut c_void, size: u64) -> bool {
+    
+    pub fn read_memory<T>(&self, addr: &u32, out: T) -> T {
+        let mut result = out;
+        let size = mem::size_of::<T>();
+        // &mut town_name_arr as *mut _ as *mut _
         unsafe{
             let r = kernel32::ReadProcessMemory(self.handler,
                                                 *addr as *const _,
-                                                out_ptr,
-                                                size,
+                                                &mut result as *mut _ as *mut _,
+                                                size as u64,
                                                 ptr::null_mut());
             if r == 0 {
                 read_memory_err();
             }
-            r == 1 
+            result
         }
     }
 }

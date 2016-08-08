@@ -18,8 +18,7 @@ impl Crawler {
         let mut initial_infos = None; 
         while initial_infos == None {
             if let Some(town) =  crawler.general.get_town_name() {
-                let empty_player = player::Player{ gold: 0, name: "".to_string() };
-                initial_infos = Some(crawler.get_infos(town, &empty_player));
+                initial_infos = Some(crawler.get_infos(town, None));
             } 
         }
         (crawler, initial_infos.unwrap())
@@ -36,7 +35,7 @@ impl Crawler {
     }
 
     fn get_differences(&mut self, town_name: String, old: &Infos) -> Option<Infos> {
-        let new = self.get_infos(town_name, &old.player);
+        let new = self.get_infos(town_name, Some(old));
         let diff = old.diff(&new); 
         if diff.is_empty() {
             Some(diff)
@@ -46,10 +45,10 @@ impl Crawler {
         }
     }
     
-    fn get_infos(&mut self, town_name: String, old_player: &player::Player) -> Infos {
-        let date = self.general.get_date(); 
+    fn get_infos(&mut self, town_name: String, old: Option<&Infos>) -> Infos {
+        let date = self.general.get_date(old); 
         let (town, ship) = self.kontor.get_info(town_name);
-        let player = self.player.get_info(old_player);
+        let player = self.player.get_info(old);
         Infos{ date: date, ship: ship, town: town, player: player }
     }
 }

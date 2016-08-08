@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod tests {
     use crawler::process;
-    use crawler::subcrawlers::{ kontor, general }; 
+    use crawler::subcrawlers::{ kontor, general, player };
+    // use test::Bencher;
     
     #[test]
     fn test_town() {
@@ -14,6 +15,11 @@ mod tests {
         assert!(beer.is_some());
         assert!(beer.unwrap().sell > 0);
     }
+
+    // #[bench]
+    // fn bench_town(b: &mut Bencher) {
+    //     b.iter(|| test_town());
+    // }
 
     #[test]
     fn test_ship() {
@@ -37,8 +43,19 @@ mod tests {
     fn test_date() {
         let process = get_process();
         let general = general::GeneralCrawler::new(process);
-        let date = &general.get_date();
-        assert!(date == &[12, 06, 1345], "{:?}", date); 
+        let date = &general.get_date(None);
+        assert!(date == &[11, 05, 1300], "{:?}", date); 
+    }
+
+    #[test]
+    fn test_player() {
+        let process = get_process();
+        let player_crawler = player::PlayerCrawler::new(process); 
+        let player = player_crawler.get_info(None);
+        assert!(player.name.is_some());
+        let name = player.name.unwrap();
+        assert!(name == "a b", "player: {:?}", name);
+        assert!(player.gold == 10000, "gold: {}", player.gold); 
     }
 
     
