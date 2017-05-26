@@ -36,7 +36,7 @@ impl Town {
 
     pub fn diff(&self, town: &Town) -> Town {
         let mut diff = Town::new();
-        if &self.name != &town.name {
+        if self.name != town.name {
             diff.name = town.name.clone();
             // if new town don't diff mats
             diff.materials = town.materials.clone();
@@ -46,10 +46,10 @@ impl Town {
             diff.name = self.name.clone();
             diff.materials = diff_mats(&self.materials, &town.materials);
         }
-        if &self.total_weight != &town.total_weight {
+        if self.total_weight != town.total_weight {
             diff.total_weight = town.total_weight;
         }
-        if &self.unknown != &town.unknown {
+        if self.unknown != town.unknown {
             diff.unknown = town.unknown;
         }
         diff
@@ -57,6 +57,6 @@ impl Town {
 
     pub fn is_empty(&self) -> bool {
         self.materials.is_empty()
-            && &self.total_weight == &0 && &self.unknown == &0 
+            && self.total_weight == 0 && self.unknown == 0 
     }
 }

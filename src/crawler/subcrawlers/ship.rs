@@ -22,7 +22,7 @@ impl Ship {
     
     pub fn diff(&self, ship: &Ship) -> Ship {
         let mut diff= Ship::new();
-        if &self.name != &ship.name {
+        if self.name != ship.name {
             diff.name = ship.name.clone(); 
             diff.materials = ship.materials.clone(); 
         } else {

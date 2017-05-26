@@ -1,7 +1,7 @@
 #![feature(custom_derive, plugin, try_from, test)]
-#![plugin(serde_macros, clippy)]
+#![plugin(clippy)]
 #![allow(identity_op)]
-#[macro_use] extern crate log;
+extern crate log;
 
 extern crate rand;
 extern crate kernel32;
@@ -10,6 +10,7 @@ extern crate wio;
 extern crate time;
 extern crate serde;
 extern crate serde_json;
+#[macro_use] extern crate serde_derive;
 extern crate ws;
 extern crate env_logger;
 extern crate getopts;
