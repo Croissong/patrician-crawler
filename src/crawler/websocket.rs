@@ -19,15 +19,16 @@ pub fn spawn_websocket(server_url: String) -> Option<Sender> {
             println!("Failed to create WebSocket due to: {:?}", error);
         }
     }).unwrap();
-    match rx.recv().unwrap() {
-        Some(socket) => {
+    if let Ok(socket_opt) = rx.recv() {
+        if let Some(socket) = socket_opt {
             join_channel(&socket);
-            Some(socket)
+            return Some(socket)
         }
-        None => None
     }
+    println!("Failed to create WebSocket");
+    None
 }
-
+    
 fn join_channel(out: &Sender){
     println!("joined channel");
     out.send(constants::CHANNEL).unwrap();

@@ -1,6 +1,7 @@
 #![feature(custom_derive, plugin, try_from, test)]
 #![plugin(clippy)]
 #![allow(identity_op)]
+
 extern crate log;
 
 extern crate rand;
@@ -42,11 +43,18 @@ fn main() {
 }
 
 fn start_crawler(process: process::Process, host: String) {
-    if let Some(socket) = websocket:: spawn_websocket(host) {
-        let ( mut crawler, inital_infos ) = crawler::crawler::Crawler::new(process); 
+    let ( mut crawler, inital_infos ) = crawler::crawler::Crawler::new(process); 
+    if let Some(socket) = websocket::spawn_websocket(host) {
         loop {
             if let Some(infos) = crawler.crawl(&inital_infos) {
                 websocket::send_infos(&infos, &socket);
+            }
+            thread::sleep(Duration::from_millis(1000));
+        }
+    } else {
+         loop {
+            if let Some(infos) = crawler.crawl(&inital_infos) {
+                println!("{:?}", &infos);
             }
             thread::sleep(Duration::from_millis(1000));
         }

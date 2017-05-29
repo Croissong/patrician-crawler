@@ -38,10 +38,10 @@ impl PlayerCrawler {
         let first_name = self.process.read_memory(&self.first_name_addr, [0u8; 14]);
         let last_name = self.process.read_memory(&self.last_name_addr, [0u8; 14]);
         let first_name = first_name.iter()
-            .map(|b| { format!("{}", b.clone() as char) })
+            .map(|b| { format!("{}", *b as char) })
             .collect::<String>();
         let last_name = last_name.iter()
-            .map(|b| { format!("{}", b.clone() as char) })
+            .map(|b| { format!("{}", *b as char) })
             .collect::<String>();
         format!("{} {}", first_name, last_name)
     }
@@ -55,12 +55,12 @@ pub struct Player {
 impl Player {
     
     pub fn is_empty(&self) -> bool {
-        &self.gold == &0
+        self.gold == 0
     } 
 
     pub fn diff(&self, player: &Player) -> Player {
         let mut diff = Player{ name: player.name.clone(), gold: 0 };
-        if &self.gold != &player.gold {
+        if self.gold != player.gold {
             diff.gold = player.gold;
         }
         diff
